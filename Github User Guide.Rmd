@@ -7,20 +7,25 @@ output: html_document
 
 #Github User Guide:
 
-1. Link Github and R Studio
-Step 1; Fork my repository (https://github.com/YerikZ/MSF_GW_Group_5) everyone has done so
+#1. Link Github and R Studio
+
+Step 1; Fork my repository 
+(https://github.com/YerikZ/MSF_GW_Group_5) everyone has done so
 Step 2: Create version-control project with the link that appears on YOUR Github repository
 Step 3: Different commands
+
 Pull request: download all the data from Github
 Commit: any change in the project folder (you can find the directory on the bottom left of R Studio)
 Push request: after you commit every modification, you can upload the project folder to the Github repository
 
-2. Merge Yerik's repository with Yours
+#2. Merge Yerik's repository with Yours
+
 Now my repository is the Master, main project repository; all final project related documents should appear here
 
 Simply create a Pull request on Github:
 Case 1: Contribute your repository to mine
-Select base "name of your repository" to head "name of my repository" Note: after I approve the request, your contribution will appear on my repository
+Select base "name of your repository" to head "name of my repository" 
+Note: after I approve the request, your contribution will appear on my repository
 
 Case 2: Synchronise from my repository to yours
 Select base "name of your repository" to head "name of my repository"
