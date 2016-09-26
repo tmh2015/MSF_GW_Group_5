@@ -33,7 +33,7 @@ Select base "name of your repository" to head "name of my repository"
 Note: after I approve the request, your contribution will appear on my repository
 
 Case 2: Synchronise from my repository to yours
-Select base "name of your repository" to head "name of my repository"
+Select base "name of my repository" to head "name of your repository"
 Note: if there is no conflict, the merge should be automatic
 
 Now you can try Case 2 to obtain the newly updated files from my repository (you can also try to correct errors like typos in this user guide)
