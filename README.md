@@ -16,6 +16,7 @@ Time: 12:00pm
 Agenda:
 1) Discuss available datasets 
 2) Confirm the project timeline
+3) Role specification
 
 1. Datasets
 Avaiable datasets: demographical data and financial data
@@ -30,4 +31,13 @@ Group DDL: 14 Oct
 1 Oct to 7 Oct: Individual Contribution
 7 Oct: 3rd meeting
 8 Oct to 14 Oct: Synthesise, Improve and Finalise the Report
+
+3. Role Specification
+Mernalia:
+Yilin Zhu: 
+Minghui:
+Virat:
+Mei:
+Che Wei: 
+
 
