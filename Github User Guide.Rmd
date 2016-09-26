@@ -13,11 +13,12 @@ output:
 
 #1. Link Github and R Studio
 
-Step 1; Fork my repository 
+Step 1: Fork my repository 
 (https://github.com/YerikZ/MSF_GW_Group_5) everyone has done so
-Step 2: Create version-control project with the link that appears on YOUR Github repository
-Step 3: Different commands
 
+Step 2: Create version-control project with the link that appears on YOUR Github repository
+
+Step 3: Different commands
 Pull request: download all the data from Github
 Commit: any change in the project folder (you can find the directory on the bottom left of R Studio)
 Push request: after you commit every modification, you can upload the project folder to the Github repository
