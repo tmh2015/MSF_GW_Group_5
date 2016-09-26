@@ -2,7 +2,11 @@
 title: "GitHub User Guide"
 author: "Yilin Zhu"
 date: "26 September 2016"
-output: html_document
+output:
+  beamer_presentation:
+    slide_level: 2
+  ioslides_presentation:
+    css: style.css
 ---
 
 #Github User Guide:
