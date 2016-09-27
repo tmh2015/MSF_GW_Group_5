@@ -1,0 +1,32 @@
+PEW RESEARCH CENTER - Global Attitudes & Trends in association with Sasakawa Peace Foundation USA
+
+2015 U.S.-Japan Relations Survey
+
+It is important to read this information before using the 2015 U.S.-Japan Relations Survey dataset.
+
+ 
+1.	General population weight:
+	
+	The weight that must be used when analyzing the attitudes and opinions of the general populations are:
+		
+	General population variable name: Weight
+			
+	Weight by weight for this analysis.
+
+
+2.	The full topline results are for the general population, unless otherwise stated.
+
+
+3.	The questionnaire includes full question wording as well as answer category values.
+
+
+4.	Due to length, the question labels for Q2, Q4, Q5, Q6, Q12, Q14, Q15 and Q17 are truncated in the dataset. See the questionnaire for full question wording.
+
+
+5.	The Methods in Detail provides a methodological overview, including sample design, mode, languages, fieldwork dates, sample size, margin of error, and representativeness.
+
+
+6.	Certain variables have been eliminated from the dataset because of disclosure sensitivities.
+
+
+ 
