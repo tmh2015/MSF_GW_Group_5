@@ -23,7 +23,7 @@ Avaiable datasets: demographical data and financial data
 ###Project Timelines
 + Project DDL: 16 Oct
 + Group DDL: 14 Oct
-+ 27 Sept: Confirm dataset
++ 27 Sept: Confirm dataset (gaming, jobs and broadband)
 + 28 to 39 Sept: Individual Analysis of dataset
 + 30 Sept: Discuss report structure and individual role (2nd meeting)
 + 1 Oct to 7 Oct: Individual Contribution
