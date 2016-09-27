@@ -15,7 +15,7 @@ Useful websites:
 ##Agenda:
 + Discuss available datasets 
 + Confirm the project timeline
-+ Role specification
+
 
 ###Datasets
 Avaiable datasets: demographical data and financial data
@@ -23,7 +23,6 @@ Avaiable datasets: demographical data and financial data
 ###Project Timelines
 + Project DDL: 16 Oct
 + Group DDL: 14 Oct
-
 + 27 Sept: Confirm dataset
 + 28 to 39 Sept: Individual Analysis of dataset
 + 30 Sept: Discuss report structure and individual role (2nd meeting)
@@ -32,6 +31,7 @@ Avaiable datasets: demographical data and financial data
 + 8 Oct to 14 Oct: Synthesise, Improve and Finalise the Report
 
 # Meeting Minutes Two:
+Role specification
 ###Role Specification
 Mernalia:
 Yilin Zhu: 
