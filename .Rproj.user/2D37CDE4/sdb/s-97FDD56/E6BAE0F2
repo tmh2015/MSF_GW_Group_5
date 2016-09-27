@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"GitHub User Guide\"\nauthor: \"Yilin Zhu\"\ndate: \"26 September 2016\"\noutput:\n  beamer_presentation:\n    slide_level: 2\n  ioslides_presentation:\n    css: style.css\n---\n\n#Github User Guide:\n\n#1. Link Github and R Studio\n\nStep 1: Fork my repository (https://github.com/YerikZ/MSF_GW_Group_5) \neveryone has done so\n\nStep 2: Create version-control project with the link that appears on YOUR Github repository\n\nStep 3: Different commands\n\n-Pull request: download all the data from Github\n\n-Commit: any change in the project folder (you can find the directory on the bottom left of R Studio)\n\n-Push request: after you commit every modification, you can upload the project folder to the Github repository\n\n\n\n#2. Merge Yerik's repository with Yours\n\nNow my repository is the Master, main project repository; all final project related documents should appear here\n\nSimply create a Pull request on Github:\n\nCase 1: Contribute your repository to mine\n\nSelect base \"name of my repository\" to head \"name of your repository\" \n\nNote: after I approve the request, your contribution will appear on my repository\n\nCase 2: Synchronise from my repository to yours\n\nSelect base \"name of your repository\" to head \"name of my repository\"\n\nNote: if there is no conflict, the merge should be automatic\n\nNow you can try Case 2 to obtain the newly updated files from my repository (you can also try to correct errors like typos in this user guide)\n\n\n\n\n",
+    "created" : 1474895261757.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1466814780",
+    "id" : "E6BAE0F2",
+    "lastKnownWriteTime" : 1474965628,
+    "last_content_update" : 1474965628531,
+    "path" : "~/OneDrive/UK/Imperial College/BA/Modules/MSF/MSF_GW_Group_5/Github User Guide.Rmd",
+    "project_path" : "Github User Guide.Rmd",
+    "properties" : {
+        "source_window_id" : "",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
