@@ -1,0 +1,211 @@
+---
+title: "GW_Yerik_Analysis"
+author: "Yilin Zhu"
+date: "29/09/2016"
+output: html_document
+---
+
+```{r Library, include=FALSE}
+library(ggplot2)
+library(reshape2)
+library(grid)
+library(scales)
+library(sqldf)
+```
+
+```{r Read Data, include = TRUE}
+gjb <- read.csv('/Users/Yerik/OneDrive/UK/Imperial College/BA/Modules/MSF/MSF_GW_Group_5/Dataset/June 10-July 12, 2015 - Gaming, Jobs and Broadband - CSV.csv', stringsAsFactors = FALSE)
+#View(gjb)
+#summary(gjb)
+```
+
+### Demographic Data
+```{r Descriptive Statistics, echo = TRUE, out.width = "60%", fig.align = "center"}
+ggplot(data = gjb, aes(x=factor(sex, levels=c(1,2), labels = c("Male","Female"))))+geom_bar(stat="count")+labs(x="",y="No. of Respondents",title="Gender Distribution")
+
+ggplot(data = gjb, aes(x=age))+geom_density()+labs(x="Age",title="Age Distribution")
+
+ggplot(data = gjb, aes(x=age))+geom_bar(stat="count")+labs(x="Age",title="Age Distribution")
+
+ggplot(data = gjb, aes(x=factor(inc, levels=c(1:9,98,99), labels = c("<10","10-20","20-30","30-40","40-50","50-75","75-100","100-150",">150","Don't know","Refused"))))+geom_bar(stat="count")+labs(x="Income Range $'000",y="No. of Respondents",title="Income Distribution")
+
+ggplot(data = gjb, aes(x=factor(race, levels=c(1,2,3,4,5,6,8,9), labels = c("White","Black","Asian/Islander","Mixed race","Native American","Other","Don't know","Refused"))))+geom_bar(stat="count")+labs(x="",y="No. of Respondents",title="Race Distribution")
+
+ggplot(data = gjb, aes(x=factor(educ2, levels=c(1,2,3,4,5,6,7,8,98,99), labels = c("Less than High school","High school incomplete","High school","College no degree","Two year college","Bachelor","Postgrad no degree","Postgrad","Don't know","Refused"))))+geom_bar(stat="count")+labs(x="",y="No. of Respondents",title="Highest Education")
+
+ggplot(data = gjb, aes(x=factor(marital, levels=c(1,2,3,4,5,6,8,9), labels = c("Married","Living with a partner","Divorced","Separated","Widowed","Never been married","Don't know","Refused"))))+geom_bar(stat="count")+labs(x="",y="No. of Respondents",title="Marital Status")
+
+```
+
+### Q1: What's the gender and age difference in online dating?
+
+date1a: Have YOU, personally, ever used an online dating site such as Match.com, eHarmony, or OK Cupid?
+
+```{r Dating, echo = TRUE, out.width = "60%", fig.align = "center"}
+date1a <- gjb[gjb[c("eminuse")]==1 | gjb[c("intmob")] ==1,] #extract the dataset for date1a
+date1a <- date1a[date1a["date1a"] == c(1,2),] #remove the data of don't know and refused
+ggplot(data = date1a)+geom_bar(aes(x=factor(date1a,levels=c(1,2),labels=c("Yes","No")),fill=factor(sex)),position="dodge",stat="count")+labs(x="Online Dating Sites Usage", y="No. of Respondents", title="Have you ever used an online dating site?")
+
+date1a.age1 <- date1a[date1a["age"] < 50,]
+p1 <- nrow(date1a.age1[date1a.age1["date1a"]==1,])/nrow(date1a.age1) #percent of dating in age<50
+date1a.age2 <- date1a[date1a["age"] >= 50,]
+p2 <- nrow(date1a.age2[date1a.age2["date1a"]==1,])/nrow(date1a.age2) #percent of dating in age>=50
+date.age <- data.frame(age=c("<50",">=50"),percent=c(p1,p2))
+ggplot(data = date.age)+geom_bar(aes(x=age,y=percent),stat="unique") +labs(x="Age Group", y="", title="Percentage of Dating in Different Age Group")
+```
+
+#### Conclusion: 
+
+- No gender difference found in online dating.
+- The percentage of dating in age group <50 is the two times that of dating in age group >=50.
+
+
+### Q2: Opinions about online dating
+
+- "Online dating is a good way to meet people"
+- "Online dating allows people to find a better match for themselves because they can get to know a lot more people"
+- "People who use online dating sites are desperate"
+- "Online dating keeps people from settling down because they always have options for people to date"
+- "Online dating is easier and more efficient than other ways of meeting people"
+- "Online dating is more dangerous than other ways of meeting people")
+
+```{r Dating Opinion, echo = TRUE, out.width = "60%", fig.align = "center"}
+date <- gjb[c("date4a","date4b","date4c","date4d","date4e","date4f")]
+mdate <- melt(date, id.vars = 0)
+mdate$value <- factor(mdate$value,levels=c(1,2,8,9),labels=c("Agree","Disagree","Don't know","Refused"))
+ggplot(data = mdate, aes(x=variable,fill=value))+geom_bar(stat = "count")+labs(x="Question",y="No. of Responds",title="Distribution of Opinions about Online Dating")
+```
+
+Opinions in people who had no experience in online dating
+
+```{r Dating Opinion1, echo = TRUE, out.width = "60%", fig.align = "center"}
+date1a_no <- gjb[gjb["date1a"] == 2,c("date4a","date4b","date4c","date4d","date4e","date4f")]
+date1a_no <- na.omit(date1a_no)
+mdate4_no <- melt(date1a_no[,c("date4a","date4b","date4c","date4d","date4e","date4f")], id.vars = 0)
+ggplot(data = mdate4_no, aes(x=variable,fill=factor(value,levels=c(1,2,8,9),labels=c("Agree","Disagree","Don't know","Refused"))))+geom_bar(stat = "count")+labs(x="Question",y="No. of Responds",title="Said No about Online Dating")
+```
+
+Opinions in people who had experience in online dating
+
+```{r Dating Opinion2, echo = TRUE, out.width = "60%", fig.align = "center"}
+date1a_yes <- gjb[gjb["date1a"] == 1,c("date4a","date4b","date4c","date4d","date4e","date4f")]
+date1a_yes <- na.omit(date1a_yes)
+mdate4_yes <- melt(date1a_yes[,c("date4a","date4b","date4c","date4d","date4e","date4f")], id.vars = 0)
+ggplot(data = mdate4_yes, aes(x=variable,fill=factor(value,levels=c(1,2,8,9),labels=c("Agree","Disagree","Don't know","Refused"))))+geom_bar(stat = "count")+labs(x="Question",y="No. of Responds",title="Said Yes about Online Dating")
+```
+
+#### Conclusion: 
+
+It seems that both group of people are concerned about the safety issue with online dating.
+
+### Q3: What's the gender and age difference in gaming?
+
+game1: Do you ever play video games on a computer, TV, game console, or portable device like a cell phone?
+
+```{r Gaming, echo = TRUE,out.width = "60%", fig.align = "center"}
+game1 <- gjb[gjb["game1"] == c(1,2),]
+
+#Overall
+ggplot(data = game1)+geom_bar(aes(x=factor(game1,levels=c(1,2),labels=c("Yes","No"))),position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Have you ever played video games?")
+
+#Gender
+ggplot(data = game1)+geom_bar(aes(x=factor(game1,levels=c(1,2),labels=c("Yes","No")),fill=factor(sex)),position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Have you ever played video games?")
+
+#Age
+ggplot(data = game1)+geom_bar(aes(x=factor(game1,levels=c(1,2),labels=c("Yes","No")),fill=factor(age)),position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Have you ever played video games?")
+
+game1.age1 <- game1[game1["age"]<50,]
+game1.age2 <- game1[game1["age"]>=50,]
+ggplot(data = game1.age1)+geom_bar(aes(x=factor(game1,levels=c(1,2),labels=c("Yes","No"))),position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Have you ever played video games?")
+ggplot(data = game1.age2)+geom_bar(aes(x=factor(game1,levels=c(1,2),labels=c("Yes","No"))),position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Have you ever played video games?")
+
+#Proportion test (H0: There is no gender difference in the distribution of playing or not playing game in population)
+game1_test <- gjb[gjb["game1"] == c(1,2),c("sex","game1")]
+summary(game1_test)
+game1_test$sex <- factor(game1_test$sex,level=c(1,2),labels=c("Male","Female"))
+game1_test$game1 <- factor(game1_test$game1,level=c(1,2),labels=c("Yes","No"))
+prop.test(table(game1_test[,"sex"],game1_test[,"game1"]),alternative = "greater")
+#There is a gender difference among gaming people
+```
+
+game3: 
+- "Most people who play video games are men"
+- "People who play violent video games are more likely to be violent themselves"
+
+```{r Gaming1, echo = TRUE,out.width = "60%", fig.align = "center"}
+game3 <- gjb[c("game3a","game3b")]
+mgame3 <- melt(game3, id.vars = 0)
+mgame3$value <- factor(mgame3$value,levels=c(1,2,8,9),labels=c("Agree","Disagree","Don't know","Refused"))
+ggplot(data = mgame3, aes(x=variable,fill=value))+geom_bar(stat = "count")+labs(x="Question",y="No. of Responds",title="Distribution of Opinions about Gaming")
+ggplot(data = mgame3, aes(x=variable,fill=value))+geom_bar(stat = "count",position="dodge")+labs(x="Question",y="No. of Responds",title="Distribution of Opinions about Gaming")
+```
+
+game4:
+"Some people use the term “gamer” to describe themselves as a fan of gaming or a frequent game player. Do you think the term “gamer” describes you well, or not?"
+
+```{r Gaming2, echo = TRUE,out.width = "60%", fig.align = "center"}
+game4 <- gjb[gjb[c("game1")]==1,]
+game4 <- game4[game4["game4"]==c(1,2),]
+ggplot(data = game4, aes(x=factor(game4,levels=c(1,2),labels=c("Yes","No"))))+geom_bar(position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Are you a 'gamer'?")
+ggplot(data = game4, aes(x=factor(game4,levels=c(1,2),labels=c("Yes","No")),fill=factor(sex)))+geom_bar(position="dodge",stat="count")+labs(x="", y="No. of Respondents", title="Are you a 'gamer'?")
+```
+
+#### Conclusion:
+- 1 There is a gender difference in gaming population.
+- 2 There is a age difference in gaming population (people <50 tend to play more gaming).
+- 3 Among people who play game, they tend to avoid call themselves "gamer" but men tend to do so than women do.
+
+### Q4: The relationship between gaming and dating
+
+```{r Gaming and Dating, echo = TRUE,out.width = "60%", fig.align = "center"}
+#gaming/non-gaming people who did or didn't have online dating
+a <- nrow(game4[game4[,"date1a"]==1,])/nrow(game4) #dating Yes / gaming
+b <- nrow(game4[game4[,"date1a"]==2,])/nrow(game4) #dating No / gaming
+game4_n <- gjb[gjb[c("game1")]==2,]
+c <- nrow(game4_n[game4_n[,"date1a"]==1,])/nrow(game4_n) #dating Yes / no-gaming
+d <- nrow(game4_n[game4_n[,"date1a"]==2,])/nrow(game4_n) #dating No / no-gaming
+gd <- data.frame(type=c("date/gaming","date/non-gaming"),percent=c(a,c))
+ggplot(data=gd, aes(x=type,y=percent))+geom_bar(stat="unique")
+mat <- matrix(c(a,b,c,d),byrow=F,nrow=2)
+colnames(mat) <- c("Gaming","Non-Gaming")
+rownames(mat) <- c("Dating","Non-Dating")
+#chisq.test(mat)
+gd_test <- gjb[gjb["game1"] == c(1,2) & gjb["date1a"] ==c(2),c("date1a","game1")]
+gd_test <- na.omit(gd_test)
+#summary(gd_test)
+gd_test$game1 <- factor(gd_test$game1,level=c(1,2),labels=c("Game","Non-Gaming"))
+gd_test$date1a <- factor(gd_test$date1a,level=c(2),labels=c("Non-Dating"))
+chisq.test(table(gd_test[,"date1a"],gd_test[,"game1"]))
+#not sure this chisq.test was used correctly
+```
+
+#### Conclusion:
+
+- 1 Non-gaming population has a higer percentage of online dating.
+- 2 The percentage of people who had no online dating is similar among gaming and non-gaming population
+
+### Q5: The Impact of Demographic Data on Online Dating
+
+```{r Logistic Regression, echo = TRUE,out.width = "60%", fig.align = "center"}
+#Gender, Race, Highest Education, Marital status, Age, Income; impact on dating
+date_logit <- gjb[gjb[c("eminuse")]==1 | gjb[c("intmob")] ==1,c("date1a","sex","race","educ2","marital","age","inc")]
+date_logit <- date_logit[date_logit["date1a"] == c(1,2),]
+date_logit$date1a[which(date_logit["date1a"]==2)] <- 0
+date_logit$date1a[which(date_logit["sex"]==2)] <- 0
+date_logit$race[which(date_logit["race"]>1)] <- 0
+for (i in 1:nrow(date_logit)) {
+  if (date_logit[i,"age"] <= 35) date_logit[i,"age"] <- 1
+  if (date_logit[i,"age"] > 35 & date_logit[i,"age"] <= 50) date_logit[i,"age"] <- 2
+  if (date_logit[i,"age"] > 50) date_logit[i,"age"] <- 3
+  }
+summary(date_logit)
+mylogit1 <- glm(date1a~sex+race+educ2+marital+age+inc,data=date_logit,family = "binomial")
+summary(mylogit1)
+mylogit2 <- glm(date1a~sex+race+educ2+marital+inc,data=date_logit,family = "binomial")
+summary(mylogit2)
+```
+
+#### Conclusion:
+
+- 1 Gender has little effect on determining whether a person had online dating or not.
+- 2 Race, education, maritial status and income all have significant statistical effects on determining whether a person had dating or not; marital status is the most significant factor. (but I'm confused in interpreting the model, will discuss you later)
