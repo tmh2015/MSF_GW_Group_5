@@ -1,0 +1,37 @@
+title: Report Structure Y&V
+date: 10 Oct 2016
+
+#The User Profile of Online Dating
+
+This report used the dataset of $June 10-July 12, 2015 - Gaming, Jobs and Broadband$ to build the user profile of people using online dating websties and apps. The main areas we are going to investigate are demographic data including gender, race, education, marital status, age, income and employment status. By analysing these variables and their correlations with online dating, this report will be able to create the user profile of online dating in the population.
+
+##Description of the dataset
+
+Basically, use different fuctions to summarise the dataset.
+summary()
+str()
+After summarsing the dataset, we can remove these variables that we do not need.
+
+Then we plot and describe the variable of date1a and date2a and analyse the independence between the two (chewei).
+
+Question: what the features of these respondents who answred Yes or No?
+
+##Demographic Factors in Online Dating
+
+We will look at gender (sex), race, education (educ2), marital status (marital), age and income (inc). There are two main steps in this part of analysis
+
+- First, describe and transform each variabe
+- Second, conduct statistic test to prove the assumption
+
+At the end of this part, we should be able to conclude like: the people who had online dating experience are male, white people, with college education, ....
+
+We should also raise concerns because of the limitation of our dataset (e.g. the most respondents are white, resulting a biased conclusion).
+
+##The Employment Status on Online Dating
+
+We will look at the variables (emplnw, emptype1, emptype2, emptype3, stud) and analyse the relationship between these variables and online dating.
+
+##Advanced Analytics
+In this part, we will use Logistic Regression and Clustering to analyse the above variables to see the statistic relationship between the dependent variables and independent variables.
+
+##Summary and Recommendation
