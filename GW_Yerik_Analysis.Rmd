@@ -11,6 +11,7 @@ library(reshape2)
 library(grid)
 library(scales)
 library(sqldf)
+library(rms)
 ```
 
 ```{r Read Data, include = TRUE}
@@ -172,7 +173,7 @@ rownames(mat) <- c("Dating","Non-Dating")
 #chisq.test(mat)
 gd_test <- gjb[gjb["game1"] == c(1,2) & gjb["date1a"] ==c(2),c("date1a","game1")]
 gd_test <- na.omit(gd_test)
-#summary(gd_test)
+summary(gd_test)
 gd_test$game1 <- factor(gd_test$game1,level=c(1,2),labels=c("Game","Non-Gaming"))
 gd_test$date1a <- factor(gd_test$date1a,level=c(2),labels=c("Non-Dating"))
 chisq.test(table(gd_test[,"date1a"],gd_test[,"game1"]))
@@ -199,10 +200,14 @@ for (i in 1:nrow(date_logit)) {
   if (date_logit[i,"age"] > 50) date_logit[i,"age"] <- 3
   }
 summary(date_logit)
+for (i in)
+as.factor(date_logit)
 mylogit1 <- glm(date1a~sex+race+educ2+marital+age+inc,data=date_logit,family = "binomial")
 summary(mylogit1)
 mylogit2 <- glm(date1a~sex+race+educ2+marital+inc,data=date_logit,family = "binomial")
 summary(mylogit2)
+mylogit3 <- lrm(date1a~sex+race+educ2+marital+age+inc,data=date_logit)
+summary(mylogit3)
 ```
 
 #### Conclusion:
