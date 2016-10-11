@@ -12,6 +12,7 @@ library(grid)
 library(scales)
 library(sqldf)
 library(rms)
+library(pscl)
 ```
 
 ```{r Read Data, include = TRUE}
@@ -26,7 +27,16 @@ ggplot(data = gjb, aes(x=factor(sex, levels=c(1,2), labels = c("Male","Female"))
 
 ggplot(data = gjb, aes(x=age))+geom_density()+labs(x="Age",title="Age Distribution")
 
-ggplot(data = gjb, aes(x=age))+geom_bar(stat="count")+labs(x="Age",title="Age Distribution")
+
+
+for (i in 1:nrow(gjb)) {
+  if (gjb[i,"age"] <= 35) gjb[i,"ageGroup"] <- 1
+  if (gjb[i,"age"] > 35 & gjb[i,"age"] <= 50) gjb[i,"ageGroup"] <- 2
+  if (gjb[i,"age"] > 50 & gjb[i,"age"] <= 65) gjb[i,"ageGroup"] <- 3
+  if (gjb[i,"age"] > 65) gjb[i,"ageGroup"] <- 4
+}
+
+ggplot(data = gjb, aes(x=ageGroup))+geom_bar(stat="count")+labs(x="Age",title="Age Distribution")
 
 ggplot(data = gjb, aes(x=factor(inc, levels=c(1:9,98,99), labels = c("<10","10-20","20-30","30-40","40-50","50-75","75-100","100-150",">150","Don't know","Refused"))))+geom_bar(stat="count")+labs(x="Income Range $'000",y="No. of Respondents",title="Income Distribution")
 
@@ -42,10 +52,44 @@ ggplot(data = gjb, aes(x=factor(marital, levels=c(1,2,3,4,5,6,8,9), labels = c("
 
 date1a: Have YOU, personally, ever used an online dating site such as Match.com, eHarmony, or OK Cupid?
 
-```{r Dating, echo = TRUE, out.width = "60%", fig.align = "center"}
+```{r Dating1, echo = TRUE, out.width = "60%", fig.align = "center"}
 date1a <- gjb[gjb[c("eminuse")]==1 | gjb[c("intmob")] ==1,] #extract the dataset for date1a
 date1a <- date1a[date1a["date1a"] == c(1,2),] #remove the data of don't know and refused
 ggplot(data = date1a)+geom_bar(aes(x=factor(date1a,levels=c(1,2),labels=c("Yes","No")),fill=factor(sex)),position="dodge",stat="count")+labs(x="Online Dating Sites Usage", y="No. of Respondents", title="Have you ever used an online dating site?")
+
+date1a_test <- date1a[,c("sex","date1a")]
+summary(date1a_test)
+date1a_test$sex <- factor(date1a_test$sex,level=c(1,2),labels=c("Male","Female"))
+date1a_test$date1a <- factor(date1a_test$date1a,level=c(1,2),labels=c("Yes","No"))
+prop.test(table(date1a_test[,"sex"],date1a_test[,"date1a"]),alternative = "greater")
+
+#reject H0 in 10%, there is a gender difference
+
+#difference in age group
+ggplot(data = date1a)+geom_bar(aes(x=ageGroup,fill=as.factor(date1a)),stat="count",position="stack") +labs(x="Age Group", y="", title="Percentage of Dating in Different Age Group")
+
+date1a_test1 <- date1a[,c("ageGroup","date1a")]
+summary(date1a_test1)
+date1a_test1$sex <- as.factor(date1a_test1$ageGroup)
+date1a_test1$date1a <- factor(date1a_test1$date1a,level=c(1,2),labels=c("Yes","No"))
+prop.test(table(date1a_test1[,"ageGroup"],date1a_test1[,"date1a"]))
+
+#reject H0, there is a difference among age group
+
+date1a.age1 <- date1a[date1a["age"] < 50,]
+p1 <- nrow(date1a.age1[date1a.age1["date1a"]==1,])/nrow(date1a.age1) #percent of dating in age<50
+date1a.age2 <- date1a[date1a["age"] >= 50,]
+p2 <- nrow(date1a.age2[date1a.age2["date1a"]==1,])/nrow(date1a.age2) #percent of dating in age>=50
+date.age <- data.frame(age=c("<50",">=50"),percent=c(p1,p2))
+ggplot(data = date.age)+geom_bar(aes(x=age,y=percent),stat="unique") +labs(x="Age Group", y="", title="Percentage of Dating in Different Age Group")
+```
+
+date2a: Have you ever used a dating app on your cell phone? 
+
+```{r Dating2, echo = TRUE, out.width = "60%", fig.align = "center"}
+date2a <- gjb[gjb[c("smart1")]==1,] #extract the dataset for date1a
+date2a <- date2a[date2a["date2a"] == c(1,2),] #remove the data of don't know and refused
+ggplot(data = date2a)+geom_bar(aes(x=factor(date2a,levels=c(1,2),labels=c("Yes","No")),fill=factor(sex)),position="dodge",stat="count")+labs(x="Online Dating Sites Usage", y="No. of Respondents", title="Have you ever used a dating app?")
 
 date1a.age1 <- date1a[date1a["age"] < 50,]
 p1 <- nrow(date1a.age1[date1a.age1["date1a"]==1,])/nrow(date1a.age1) #percent of dating in age<50
@@ -57,7 +101,7 @@ ggplot(data = date.age)+geom_bar(aes(x=age,y=percent),stat="unique") +labs(x="Ag
 
 #### Conclusion: 
 
-- No gender difference found in online dating.
+- There IS a gender difference found in online dating.
 - The percentage of dating in age group <50 is the two times that of dating in age group >=50.
 
 
@@ -65,8 +109,8 @@ ggplot(data = date.age)+geom_bar(aes(x=age,y=percent),stat="unique") +labs(x="Ag
 
 - "Online dating is a good way to meet people"
 - "Online dating allows people to find a better match for themselves because they can get to know a lot more people"
-- "People who use online dating sites are desperate"
-- "Online dating keeps people from settling down because they always have options for people to date"
+- "People who use online dating sites are desperate" (colour)
+- "Online dating keeps people from settling down because they always have options for people to date" (colour)
 - "Online dating is easier and more efficient than other ways of meeting people"
 - "Online dating is more dangerous than other ways of meeting people")
 
@@ -99,7 +143,7 @@ ggplot(data = mdate4_yes, aes(x=variable,fill=factor(value,levels=c(1,2,8,9),lab
 
 It seems that both group of people are concerned about the safety issue with online dating.
 
-### Q3: What's the gender and age difference in gaming?
+### Q3: What's the gender and age difference in gaming? (excluded)
 
 game1: Do you ever play video games on a computer, TV, game console, or portable device like a cell phone?
 
@@ -156,7 +200,7 @@ ggplot(data = game4, aes(x=factor(game4,levels=c(1,2),labels=c("Yes","No")),fill
 - 2 There is a age difference in gaming population (people <50 tend to play more gaming).
 - 3 Among people who play game, they tend to avoid call themselves "gamer" but men tend to do so than women do.
 
-### Q4: The relationship between gaming and dating
+### Q4: The relationship between gaming and dating (excluded)
 
 ```{r Gaming and Dating, echo = TRUE,out.width = "60%", fig.align = "center"}
 #gaming/non-gaming people who did or didn't have online dating
@@ -189,25 +233,35 @@ chisq.test(table(gd_test[,"date1a"],gd_test[,"game1"]))
 
 ```{r Logistic Regression, echo = TRUE,out.width = "60%", fig.align = "center"}
 #Gender, Race, Highest Education, Marital status, Age, Income; impact on dating
-date_logit <- gjb[gjb[c("eminuse")]==1 | gjb[c("intmob")] ==1,c("date1a","sex","race","educ2","marital","age","inc")]
-date_logit <- date_logit[date_logit["date1a"] == c(1,2),]
-date_logit$date1a[which(date_logit["date1a"]==2)] <- 0
-date_logit$date1a[which(date_logit["sex"]==2)] <- 0
-date_logit$race[which(date_logit["race"]>1)] <- 0
-for (i in 1:nrow(date_logit)) {
-  if (date_logit[i,"age"] <= 35) date_logit[i,"age"] <- 1
-  if (date_logit[i,"age"] > 35 & date_logit[i,"age"] <= 50) date_logit[i,"age"] <- 2
-  if (date_logit[i,"age"] > 50) date_logit[i,"age"] <- 3
+date1_logit <- gjb[gjb[c("eminuse")]==1 | gjb[c("intmob")] ==1,c("date1a","sex","race","educ2","marital","age","inc")]
+date1_logit <- date1_logit[date1_logit["date1a"] == c(1,2),]
+
+date1_logit$date1a[which(date1_logit["date1a"]==2)] <- 0
+date1_logit$date1a[which(date1_logit["sex"]==2)] <- 0
+date1_logit$race[which(date1_logit["race"]>1) & which(date1_logit["race"]<9)] <- 0
+date1_logit$race[which(date1_logit["race"]==9)] <- NA
+for (i in 1:nrow(date1_logit)) {
+  if (date1_logit[i,"age"] <= 35) date1_logit[i,"age"] <- 1
+  if (date1_logit[i,"age"] > 35 & date1_logit[i,"age"] <= 50) date1_logit[i,"age"] <- 2
+  if (date1_logit[i,"age"] > 50 & date1_logit[i,"age"] <= 65) date1_logit[i,"age"] <- 3
+  if (date1_logit[i,"age"] > 65) date1_logit[i,"age"] <- 4
+}
+
+for (i in 1:nrow(date1_logit)) {
+  for (j in 1:ncol(date1_logit)) {
+  if (date1_logit[i,j] == 98 | date1_logit[i,j] == 99) date1_logit[i,j] <- NA
   }
-summary(date_logit)
-for (i in)
-as.factor(date_logit)
-mylogit1 <- glm(date1a~sex+race+educ2+marital+age+inc,data=date_logit,family = "binomial")
+}
+
+summary(date1_logit)
+ggplot(data = date1_logit, aes(x=age))+geom_bar(stat="count")
+mylogit1 <- glm(date1a~sex+race+educ2+marital+age+inc,data=date1_logit,family = "binomial")
 summary(mylogit1)
-mylogit2 <- glm(date1a~sex+race+educ2+marital+inc,data=date_logit,family = "binomial")
+pR2(mylogit1)
+mylogit2 <- glm(date1a~sex+race+educ2+marital+inc,data=date1_logit,family = "binomial")
 summary(mylogit2)
-mylogit3 <- lrm(date1a~sex+race+educ2+marital+age+inc,data=date_logit)
-summary(mylogit3)
+pR2(mylogit2)
+
 ```
 
 #### Conclusion:
