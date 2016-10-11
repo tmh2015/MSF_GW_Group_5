@@ -1,0 +1,203 @@
+---
+title: "Group Project MSF5"
+author: "Ming Hui"
+date: "3 October 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# **Objectives of Study**
+
+With the advent of social media, more and more people are viewing online dating in a positive light. Networking sites and mobile applications are major contributors to this trend. 
+
+We belong to the marketing team of an online dating agency - Cupid Hearts. In order to increase the efficiency of our target marketing activities, the team is embarking on a project to 
+analyse the online activities among the 2001 respondents in our survey so that we can 
+
+1. Create an accurate profile of our potential customers 
+
+2. Develop an effective marketing strategy and advertising channels
+
+The data set can be found in <http://www.pewinternet.org/datasets/june-10-july-12-2015-gaming-jobs-and-broadband/>.
+
+**Loading the data**
+```{r}
+getwd()
+setwd("D:/Users/Minghui/Documents/Imperial Courses/MathStats Foundation/Group Assignment/Assignment")
+file = "June 10-July 12, 2015 - Gaming, Jobs and Broadband_revised by Mei.csv"
+gaming_raw <- read.csv(file, header = T)
+
+```
+
+*Cleaning the data*
+The team notices that N.A. values represent a significant portion of our data. This is due to the structure of the interview in which respondents only answer questions which are relevant to themselves. 
+
+```{r}
+library(Amelia)
+library(ggplot2)
+missmap(gaming_raw, main = "Missing Values vs Observed", rank.order = FALSE)
+
+```
+
+*Demographic Analysis*
+In order to establish the different customer segments of Cupid Heart, we need to have an intimate understanding of the online behaviour and attitude towards online dating among the different groups of respondents.
+
+The respondents can be categorized according to the following
+1. Age
+2. Gender
+3. Income Level
+4. Education level
+5. Access to internet & type of access
+...
+*Income groups within sample*
+The team created 4 categories of income level for this analysis.For a sample size of 2001, there are 1696 who revealed their salary. The income is then segregated into 4 main groups as follows.
+
+Bottom one-third(524 pax) - Between 0 - 30000
+Middle one-third(604) - Between 30000 - 75000
+Upper one-third(405) - Between 75000 - 150000
+Ultra-rich(163) - Above 150000
+Refused/Don't Know(305)
+
+```{r}
+gaming_raw$inc <- factor(gaming_raw$inc, levels=c(1:9,98,99), labels = c("<10","10-20","20-30","30-40","40-50","50-75","75-100","100-150",">150","Don't know","Refused"))
+ggplot(data = gaming_raw, aes(x=inc))+geom_bar(stat="count",aes(fill=sex),position="stack")+labs(x="Income Range $'000",y="No. of Respondents",title="Income Distribution")
+
+gaming_raw$inc_group <-""
+  
+for (i in 1:(nrow(gaming_raw))){
+  if(gaming_raw[i,"inc"] == "<10") gaming_raw[i,"inc_group"] <- "Low-income" 
+  if(gaming_raw[i,"inc"] == "10-20") gaming_raw[i,"inc_group"] <- "Low-income"
+  if(gaming_raw[i,"inc"] == "20-30") gaming_raw[i,"inc_group"] <- "Low-income"
+  if(gaming_raw[i,"inc"] == "30-40") gaming_raw[i,"inc_group"] <- "Middle-income"
+  if(gaming_raw[i,"inc"] == "40-50") gaming_raw[i,"inc_group"] <- "Middle-income"
+  if(gaming_raw[i,"inc"] == "50-75") gaming_raw[i,"inc_group"] <- "Middle-income"
+  if(gaming_raw[i,"inc"] == "75-100") gaming_raw[i,"inc_group"] <- "Upper-income"
+  if(gaming_raw[i,"inc"] == "100-150") gaming_raw[i,"inc_group"] <- "Upper-income"
+  if(gaming_raw[i,"inc"] == ">150") gaming_raw[i,"inc_group"] <- "Ultra-rich"
+  if(gaming_raw[i,"inc"] == "Don't know") gaming_raw[i,"inc_group"] <- "Refused/Rejected"
+  if(gaming_raw[i,"inc"] == "Refused") gaming_raw[i,"inc_group"] <- "Refused/Rejected"  
+  }
+
+
+```
+
+*Demographic Breakdown Part1: Online Behaviour*
+*Question 1a:* Are there differences in using social media for work activities versus age?
+*Answer 1a:* Yes, the older ones tend not to use social media for work activities. 
+
+*Interview Question Used*
+Thinking about social media sites like Facebook, Twitter or LinkedIn. Have you ever...[INSERT ITEMS; RANDOMIZE]?
+a.	Used social media to look for or research a job
+b.	Applied for a job that you found out about on social media
+c.	Used social media to let your friends know about a job that was available at your place of employment
+```{r}
+ggplot(data=subset(gaming_raw, snsjob1a == 1 | snsjob1a == 2), aes(x = as.factor(snsjob1a), y = age)) + geom_boxplot() + ggtitle("Used social media to look for or research a job") + labs(x="1 = Yes, 2 = No",y="Age")
+
+ggplot(data=subset(gaming_raw, snsjob1b == 1 | snsjob1b == 2), aes(x = as.factor(snsjob1b), y = age)) + geom_boxplot() + ggtitle("Applied for a job that you found out about on social media") + labs(x="1 = Yes, 2 = No",y="Age") 
+
+ggplot(data=subset(gaming_raw, snsjob1c == 1 | snsjob1c == 2), aes(x = as.factor(snsjob1c), y = age)) + geom_boxplot() + ggtitle("Used social media to let your friends know about a job that was available at your place of employment") + labs(x="1 = Yes, 2 = No",y="Age") 
+
+SNS_jobsearch <- t.test(gaming_raw[gaming_raw[,"snsjob1a"] == 1, "age"], gaming_raw[gaming_raw[,"snsjob1a"] == 2, "age"])
+SNS_jobapply <- t.test(gaming_raw[gaming_raw[,"snsjob1b"] == 1, "age"], gaming_raw[gaming_raw[,"snsjob1b"] == 2, "age"])
+SNS_jobnotif <- t.test(gaming_raw[gaming_raw[,"snsjob1c"] == 1, "age"], gaming_raw[gaming_raw[,"snsjob1c"] == 2, "age"])
+
+SNS_jobsearch
+SNS_jobapply
+SNS_jobnotif
+```
+Based on the t-test conducted, we can that the group who do not rely on social media for job-search related activities tend to have a higher mean age. This can be due to 3 possible reasons, namely lack of internet access, unfamiliarity with IT or having an unreceptive attitude towards internet usage.
+
+
+*Question 1b:* Are there differences in using social media for work activities versus economic groups?
+*Answer 1b:* No differences. 
+
+*Interview Question Used*
+
+SNSJOB1	Thinking about social media sites like Facebook, Twitter or LinkedIn??? Have you ever...[INSERT ITEMS; RANDOMIZE]?
+a.	Used social media to look for or research a job
+b.	Applied for a job that you found out about on social media
+c.	Used social media to let your friends know about a job that was available at your place of employment
+CATEGORIES
+1	Yes
+2	No
+8	(VOL.) Don't know
+9	(VOL.) Refused
+
+
+```{r}
+ggplot(data=subset(gaming_raw, snsjob1a == 1 | snsjob1a == 2), aes(x = as.factor(snsjob1a), y = age)) + geom_boxplot() + ggtitle("Used social media to look for or research a job") + labs(x="1 = Yes, 2 = No",y="Age")
+
+ggplot(data=subset(gaming_raw, snsjob1b == 1 | snsjob1b == 2), aes(x = as.factor(snsjob1b), y = age)) + geom_boxplot() + ggtitle("Applied for a job that you found out about on social media") + labs(x="1 = Yes, 2 = No",y="Age") 
+
+ggplot(data=subset(gaming_raw, snsjob1c == 1 | snsjob1c == 2), aes(x = as.factor(snsjob1c), y = age)) + geom_boxplot() + ggtitle("Used social media to let your friends know about a job that was available at your place of employment") + labs(x="1 = Yes, 2 = No",y="Age") 
+
+snsjob1a_table <- table(subset(gaming_raw, snsjob1a == 1 | snsjob1a == 2, select = c("snsjob1a", "inc_group")))
+snsjob1b_table <- table(subset(gaming_raw, snsjob1b == 1 | snsjob1b == 2, select = c("snsjob1b", "inc_group")))
+snsjob1c_table <- table(subset(gaming_raw, snsjob1c == 1 | snsjob1c == 2, select = c("snsjob1c", "inc_group")))
+
+
+rownames(snsjob1a_table) <- c("SNS to research a job - Yes", "SNS to research a job - No")
+snsjob1a_table
+snsjob1b_table
+snsjob1c_table
+
+prop.test(c(snsjob1a_table[1,"Low-income"],snsjob1a_table[1,"Middle-income"],snsjob1a_table[1,"Upper-income"],snsjob1a_table[1,"Ultra-rich"]), c(sum(snsjob1a_table[,"Low-income"]), sum(snsjob1a_table[,"Middle-income"]), sum(snsjob1a_table[,"Upper-income"]), sum(snsjob1a_table[,"Ultra-rich"])))
+
+prop.test(c(snsjob1b_table[1,"Low-income"],snsjob1b_table[1,"Middle-income"],snsjob1b_table[1,"Upper-income"],snsjob1b_table[1,"Ultra-rich"]), c(sum(snsjob1b_table[,"Low-income"]), sum(snsjob1b_table[,"Middle-income"]), sum(snsjob1b_table[,"Upper-income"]), sum(snsjob1b_table[,"Ultra-rich"])))
+
+prop.test(c(snsjob1c_table[1,"Low-income"],snsjob1c_table[1,"Middle-income"],snsjob1c_table[1,"Upper-income"],snsjob1c_table[1,"Ultra-rich"]), c(sum(snsjob1c_table[,"Low-income"]), sum(snsjob1c_table[,"Middle-income"]), sum(snsjob1c_table[,"Upper-income"]), sum(snsjob1c_table[,"Ultra-rich"])))
+
+# prop.test(c(61,75,46,23), c(276, 375, 280, 127))
+# prop.test(c(99,118,102,46), c(276, 375, 280, 127))
+
+```
+Based on prop.test, there is no significant difference between the usage of social media for job related activities among the different income groups.
+
+
+*Demographic Breakdown Part2: Attitudes*
+The team believes that an individual with a generally positive attitude towards internet usage will be inclined to online dating. Before we can establish that relationship, we need to review the existing attitudes towards internet usage.
+
+*Question 2a:* Are there differences in attitude towards internet between the different economic groups (created 4 economic groups, Low/Mid/High/Ultra-income?
+*Answer 2a:* No, there are no significant differences towards internet usage among the different economic groups
+
+*Interview Question Used*
+BBHOME3	Thinking about all of the different information sources available to people... [INSERT FOR FIRST TWO RANDOMIZED ITEMS: Do you think people who do NOT have high speed internet access at home are at a DISadvantage when it comes to... [INSERT ITEMS; RANDOMIZE]?] [IF YES, ASK: Would you say it is a MAJOR disadvantage or a MINOR disadvantage?] {PIAL Trend, May 2010}
+How about...[INSERT NEXT ITEM]? [READ AS NECESSARY: Are people who do NOT have high speed internet access at home at a disadvantage when it comes to this?] [IF YES, ASK: Would you say it is a MAJOR disadvantage or a MINOR disadvantage?]
+a.	Keeping up with news and information
+b.	Finding out about job opportunities or gaining new career skills
+c.	Learning about or accessing government services
+d.	Getting health information
+e.	Learning new things that might improve or enrich their lives
+CATEGORIES
+1	Yes, major disadvantage
+2	Yes, minor disadvantage
+3	No, not at a disadvantage
+8	(VOL.) Don't know
+9	(VOL.) Refused
+
+```{r}
+bbhome3a_table <- table(subset(gaming_raw, bbhome3a == 1 | bbhome3a == 2 | bbhome3a == 3, select = c("bbhome3a", "inc_group")))
+bbhome3b_table <- table(subset(gaming_raw, bbhome3b == 1 | bbhome3b == 2 | bbhome3b == 3, select = c("bbhome3b", "inc_group")))
+bbhome3c_table <- table(subset(gaming_raw, bbhome3c == 1 | bbhome3c == 2 | bbhome3c == 3, select = c("bbhome3c", "inc_group")))
+bbhome3d_table <- table(subset(gaming_raw, bbhome3d == 1 | bbhome3d == 2 | bbhome3d == 3, select = c("bbhome3d", "inc_group")))
+bbhome3e_table <- table(subset(gaming_raw, bbhome3e == 1 | bbhome3e == 2 | bbhome3e == 3, select = c("bbhome3e", "inc_group")))
+
+prop.test(c(bbhome3a_table[1,"Low-income"],bbhome3a_table[1,"Middle-income"],bbhome3a_table[1,"Upper-income"],bbhome3a_table[1,"Ultra-rich"]), c(sum(bbhome3a_table[,"Low-income"]), sum(bbhome3a_table[,"Middle-income"]), sum(bbhome3a_table[,"Upper-income"]), sum(bbhome3a_table[,"Ultra-rich"])))
+
+prop.test(c(bbhome3b_table[1,"Low-income"],bbhome3b_table[1,"Middle-income"],bbhome3b_table[1,"Upper-income"],bbhome3b_table[1,"Ultra-rich"]), c(sum(bbhome3b_table[,"Low-income"]), sum(bbhome3b_table[,"Middle-income"]), sum(bbhome3b_table[,"Upper-income"]), sum(bbhome3b_table[,"Ultra-rich"])))
+
+prop.test(c(bbhome3c_table[1,"Low-income"],bbhome3c_table[1,"Middle-income"],bbhome3c_table[1,"Upper-income"],bbhome3c_table[1,"Ultra-rich"]), c(sum(bbhome3c_table[,"Low-income"]), sum(bbhome3c_table[,"Middle-income"]), sum(bbhome3c_table[,"Upper-income"]), sum(bbhome3c_table[,"Ultra-rich"])))
+
+prop.test(c(bbhome3d_table[1,"Low-income"],bbhome3d_table[1,"Middle-income"],bbhome3d_table[1,"Upper-income"],bbhome3d_table[1,"Ultra-rich"]), c(sum(bbhome3d_table[,"Low-income"]), sum(bbhome3d_table[,"Middle-income"]), sum(bbhome3d_table[,"Upper-income"]), sum(bbhome3d_table[,"Ultra-rich"])))
+
+prop.test(c(bbhome3e_table[1,"Low-income"],bbhome3e_table[1,"Middle-income"],bbhome3e_table[1,"Upper-income"],bbhome3e_table[1,"Ultra-rich"]), c(sum(bbhome3e_table[,"Low-income"]), sum(bbhome3e_table[,"Middle-income"]), sum(bbhome3e_table[,"Upper-income"]), sum(bbhome3e_table[,"Ultra-rich"])))
+```
+Conclusion: There is no difference in attitude towards internet among the different income groups.
+
+
+
+
+
